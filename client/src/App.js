@@ -2,19 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import Timer from './Timer';
 
-
-
-
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import './App.css'; // Ensure the CSS file is imported
+import './App.css';
 
 const api = axios.create({
-baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
-
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
 });
-
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
@@ -52,7 +46,7 @@ function App() {
   const login = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/login', { username, password });
+      const res = await api.post('/login', { username, password });
       localStorage.setItem('token', res.data.token);
       setToken(res.data.token);
     } catch (err) {
@@ -107,7 +101,6 @@ function App() {
     });
     setEditingId(tender._id);
 
-    // Scroll to form smoothly
     if (formRef.current) {
       formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -153,7 +146,7 @@ function App() {
     <div className="app-container">
       <header className="header">
         <h1 className="title">HEY MANIKANTA</h1>
-        <Timer/>
+        <Timer />
         <button onClick={logout} className="btn-logout">
           <FontAwesomeIcon icon={faSignOutAlt} /> Logout
         </button>
@@ -162,7 +155,7 @@ function App() {
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className={`form-container ${editingId ? 'editing-mode' : ''}`} // Fix here
+        className={`form-container ${editingId ? 'editing-mode' : ''}`}
       >
         <h2>{editingId ? 'Edit Details' : 'Add New Details'}</h2>
         <div className="form-grid">
@@ -198,7 +191,9 @@ function App() {
             required
           />
         </div>
-        <button type="submit" className="btn-submit">{editingId ? 'Update' : 'Add'}</button>
+        <button type="submit" className="btn-submit">
+          {editingId ? 'Update' : 'Add'}
+        </button>
       </form>
 
       <input
@@ -213,19 +208,16 @@ function App() {
         {tenders.map((tender) => (
           <div key={tender._id} className="tender-item">
             <div className="tender-details">
-  <p><strong>Name:</strong> {tender.name}</p>
-  <p><strong>Phone:</strong> {tender.phone}</p>
-  <p><strong>Email:</strong> {tender.email}</p>
-  <p><strong>Amount:</strong> ₹{tender.amount}</p>
-  
- <p><strong>Created At:</strong> {
-  tender.createdAt
-    ? new Date(tender.createdAt).toLocaleString()
-    : 'N/A (missing date)'
-}</p>
-
-
-</div>
+              <p><strong>Name:</strong> {tender.name}</p>
+              <p><strong>Phone:</strong> {tender.phone}</p>
+              <p><strong>Email:</strong> {tender.email}</p>
+              <p><strong>Amount:</strong> ₹{tender.amount}</p>
+              <p><strong>Created At:</strong> {
+                tender.createdAt
+                  ? new Date(tender.createdAt).toLocaleString()
+                  : 'N/A (missing date)'
+              }</p>
+            </div>
             <div className="tender-actions">
               <button onClick={() => handleEdit(tender)} className="btn-edit">
                 <FontAwesomeIcon icon={faEdit} /> Edit
